@@ -12,7 +12,7 @@ And then execute:
 
 ## Usage
 
-    Usage: convert -i <input file> -u <url> -p <path>
+    Usage: smarty-convert -i <input file> -u <url> -p <path>
         -i, --inputi HTML                HTML file to convert
         -u, --base-url URL               Base url for rewriting assets
         -p, --path PATH                  Path to write smarty template
