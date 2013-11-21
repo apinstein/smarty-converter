@@ -1,24 +1,21 @@
 # Smarty::Converter
 
-TODO: Write a gem description
+Convert Yeoman JS templates to smarty templates.
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
-    gem 'smarty-converter'
+    gem 'smarty-converter', :git => 'https://github.com/apinstein/smarty-converter.git'
 
 And then execute:
 
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install smarty-converter
-
 ## Usage
 
-TODO: Write usage instructions here
+    Usage: convert -i <input file> -u <url> -p <path>
+        -i, --inputi HTML                HTML file to convert
+        -u, --base-url URL               Base url for rewriting assets
+        -p, --path PATH                  Path to write smarty template
 
 ## Contributing
 
