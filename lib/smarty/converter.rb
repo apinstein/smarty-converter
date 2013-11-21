@@ -1,9 +1,9 @@
 require "smarty/converter/version"
 require 'nokogiri'
+require 'nokogiri-pretty'
 
 module Smarty
   class Converter
-    # Your code goes here...
 
     def initialize(html, rewrite_path)
       @html = html
@@ -11,17 +11,22 @@ module Smarty
     end
 
     def doc
-      @doc ||= Nokogiri::HTML(@html)
+      @doc ||= begin
+        doc = Nokogiri::HTML(@html, &:noblanks)
+        doc.send(:extend, ::NokogiriPretty)
+        doc
+      end
     end
 
     ABSOLUTE_REGEX = %r{^/}
     HTTP_REGEX = %r{^[http|https]}
+
     def urls
      (uncommented_links + commented_links + uncommented_scripts + commented_scripts).map { |url| url unless (url =~ ABSOLUTE_REGEX || url =~ HTTP_REGEX)}.compact
     end
 
     def uncommented_scripts
-      doc.css('script').map { |script| script.attributes['src'].value }
+      doc.css('script').map { |script| script.attributes['src'].value if script.attributes['src'] }.compact
     end
 
     def uncommented_links
@@ -38,7 +43,6 @@ module Smarty
         _doc = Nokogiri::HTML(comment.content)
         _doc.css('script').each { |script| scripts << script.attributes['src'].value }
       end
-      
       scripts
     end
 
@@ -52,21 +56,22 @@ module Smarty
           end
         end
       end
-      
+
      links 
     end
 
-    
     def smarty_template
-      head = doc.at_css('head')
-      body = doc.at_css('body')
+      #head = doc.at_css('head').children.to_html
+      #body = doc.at_css('body').children.to_html
+      head = /<head>(.+)<\/head>/m.match(@html)[1]
+      body = /<body[.+]?>(.+)<\/body>/m.match(@html)[1]
       template = <<-SMARTY
-        {WFHead}
-          #{head}
-        {/WFHead}
-        {literal}
-          #{body}
-        {/literal}
+{WFHead}
+#{head}
+{/WFHead}
+{literal}
+ #{body}
+ {/literal}
       SMARTY
       urls.each do |url|
         new_url = @rewrite_path + url
@@ -76,8 +81,5 @@ module Smarty
       template
     end
 
-    def convert
-      @template = smarty_template
-    end
   end
 end
