@@ -1,6 +1,6 @@
 require "smarty/converter/version"
 require 'nokogiri'
-require 'nokogiri-pretty'
+#require 'nokogiri-pretty'
 
 module Smarty
   class Converter
@@ -11,22 +11,19 @@ module Smarty
     end
 
     def doc
-      @doc ||= begin
-        doc = Nokogiri::HTML(@html, &:noblanks)
-        doc.send(:extend, ::NokogiriPretty)
-        doc
-      end
+      @doc ||= Nokogiri::HTML(@html, &:noblanks)
     end
 
     ABSOLUTE_REGEX = %r{^/}
-    HTTP_REGEX = %r{^[http|https]}
+    HTTP = 'http'
 
     def urls
-     (uncommented_links + commented_links + uncommented_scripts + commented_scripts).map { |url| url unless (url =~ ABSOLUTE_REGEX || url =~ HTTP_REGEX)}.compact
+     (uncommented_links + commented_links + commented_scripts +  scripts).map { |url| url unless (url =~ ABSOLUTE_REGEX || url.include?(HTTP))}.compact
     end
 
-    def uncommented_scripts
-      doc.css('script').map { |script| script.attributes['src'].value if script.attributes['src'] }.compact
+    def scripts
+      scripts = doc.xpath('//node()').map { |n| n if n.name == 'script' }.compact
+      scripts.map { |script| script.attributes['src'].value if script.attributes['src'] }.compact
     end
 
     def uncommented_links

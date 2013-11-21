@@ -22,6 +22,10 @@ describe Smarty::Converter do
             <link rel='stylesheet' href='fpp.css'>
           <![endif]-->
           <!-- foobar -->
+          <!-- build:js({.tmp,app}) scripts/scripts.js -->
+            <script src="scripts/app.js"></script>
+            <script src="scripts/routes.js"></script>
+          <!-- endbuild -->
           <script src='/foo/bar/baz.js'></script>
         </body>
       </html>
@@ -36,7 +40,9 @@ describe Smarty::Converter do
       'fpp.css',
       'bower_components/es5-shim/es5-shim.js',
       'bower_components/json3/lib/json3.min.js',
-      'bower_components/ie7.js'
+      'bower_components/ie7.js',
+      'scripts/app.js',
+      'scripts/routes.js'
     ].sort
   end
 
