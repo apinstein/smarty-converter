@@ -1,0 +1,35 @@
+#!/usr/bin/env ruby
+# smarty converter command line utility
+
+require 'optparse'
+options = {}
+
+OptionParser.new do |opts|
+  opts.banner = "Usage: convert -i <input file> -u <url>"
+
+  opts.on('-i', '--inputi HTML', 'HTML file to convert') do |i|
+     options[:input] = i
+  end
+
+  opts.on('-u', '--base-url URL', "Base url for rewriting assets") do |u|
+    options[:url] = u
+  end
+
+  opts.on('-p', '--path PATH', 'Path to write smarty template') do |p|
+    options[:path] = p
+  end
+
+end.parse!
+
+[:input, :url, :path].each do |option|
+  raise ArgumentError, "#{key} required" unless options.include?(key)
+end
+
+require 'smarty/converter'
+
+converter= Smarty::Converter.new(File.read(options[:input]), options[:url])
+
+File.open(options[:path], 'w') do |f|
+  f << converter.smarty_template
+end
+
